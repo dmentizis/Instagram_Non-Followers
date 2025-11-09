@@ -15,6 +15,7 @@ namespace NonFollowers
         private List<User>? _users = [];
         #endregion
 
+        #region Initialization
         public MainForm()
         {
             InitializeComponent();
@@ -34,105 +35,7 @@ namespace NonFollowers
             this.openFileDialog1.Multiselect = false;
             this.openFileDialog1.Title = "My Image Browser";
         }
-       
-        private void BtnFollowers_Click(object sender, EventArgs e)
-        {
-            DialogResult dr = this.openFileDialog1.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                _followersFilePath += openFileDialog1.FileName;
-                txtFollowersFilePath.Text = _followersFilePath;
-            }
-
-            EnableCompareButtton();
-        }
-
-        private void BtnFollowing_Click(object sender, EventArgs e)
-        {
-            DialogResult dr = this.openFileDialog1.ShowDialog();
-            if (dr == System.Windows.Forms.DialogResult.OK)
-            {
-                _followingFilePath += openFileDialog1.FileName;
-                txtFollowingFilePath.Text = _followersFilePath;
-            }
-
-            EnableCompareButtton();
-        }
-
-        private void BtnCompare_Click(object sender, EventArgs e)
-        {
-            try
-            {
-                ContextCleanup();
-                LoadData();
-
-                #region Validations
-                if(_following == null)
-                    throw new Exception("Following data could not be loaded.");
-
-                if(_following.relationships_following == null || _following.relationships_following.Count == 0)
-                    throw new Exception("Following relationships data could not be loaded.");
-
-                if (_followers == null)
-                    throw new Exception("Followers data could not be loaded.");
-
-                if (_followers.Count == 0)
-                    throw new Exception("No followers found in the followers data.");
-
-                if(_users == null)
-                    throw new Exception("Users list could not be initialized.");
-                #endregion
-
-                foreach (var followingUsr in _following.relationships_following)
-                {
-                    bool foundInFollowers = false;
-                    var followingUsername = followingUsr.title;
-
-                    foreach (var followerUsr in _followers)
-                    {
-
-                        string? followerUsername = followerUsr.String_list_data?.FirstOrDefault()?.Value;
-
-                        if (followingUsername == followerUsername)
-                        {
-                            foundInFollowers = true;
-                            continue;
-                        }
-                    }
-
-                    if (!foundInFollowers)
-                    {
-                        _users.Add(new User { Username = followingUsr.title ?? string.Empty, Url = followingUsr?.string_list_data?.FirstOrDefault()?.href ?? string.Empty });
-                    }
-                }
-
-                userBindingSource.DataSource = _users;
-                dataGridView1.Refresh();
-            }
-            catch (Exception ex)
-            {
-                ShowErrorMessage(ex.Message);
-            }
-        }
-
-        private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-            if (e.ColumnIndex == dataGridView1?.Columns["btnNaviagateTo"]?.Index && e.RowIndex >= 0)
-            {
-
-                try
-                {
-                    var value = dataGridView1.Rows[e.RowIndex].Cells[1].Value;
-                    
-                    if (value != null) 
-                        LogicMethods.OpenInBrowser(value.ToString());
-                }
-                catch (Exception ex)
-                {
-                    ShowErrorMessage(ex.Message);
-                }
-            }
-        }
+        #endregion
 
         #region Form Methods
         private void EnableCompareButtton()
@@ -171,6 +74,80 @@ namespace NonFollowers
         #endregion
 
         #region Control Events
+        private void BtnFollowers_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = this.openFileDialog1.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                _followersFilePath += openFileDialog1.FileName;
+                txtFollowersFilePath.Text = _followersFilePath;
+            }
+
+            EnableCompareButtton();
+        }
+        private void BtnFollowing_Click(object sender, EventArgs e)
+        {
+            DialogResult dr = this.openFileDialog1.ShowDialog();
+            if (dr == System.Windows.Forms.DialogResult.OK)
+            {
+                _followingFilePath += openFileDialog1.FileName;
+                txtFollowingFilePath.Text = _followersFilePath;
+            }
+
+            EnableCompareButtton();
+        }
+        private void BtnCompare_Click(object sender, EventArgs e)
+        {
+            try
+            {
+                ContextCleanup();
+                LoadData();
+
+                #region Validations
+                if (_following == null)
+                    throw new Exception("Following data could not be loaded.");
+
+                if (_following.relationships_following == null || _following.relationships_following.Count == 0)
+                    throw new Exception("Following relationships data could not be loaded.");
+
+                if (_followers == null)
+                    throw new Exception("Followers data could not be loaded.");
+
+                if (_followers.Count == 0)
+                    throw new Exception("No followers found in the followers data.");
+
+                if (_users == null)
+                    throw new Exception("Users list could not be initialized.");
+                #endregion
+
+                LogicMethods.CompareLists(_following.relationships_following, _followers, _users);
+
+                userBindingSource.DataSource = _users;
+                dataGridView1.Refresh();
+            }
+            catch (Exception ex)
+            {
+                ShowErrorMessage(ex.Message);
+            }
+        }
+        private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (e.ColumnIndex == dataGridView1?.Columns["btnNaviagateTo"]?.Index && e.RowIndex >= 0)
+            {
+
+                try
+                {
+                    var value = dataGridView1.Rows[e.RowIndex].Cells[1].Value;
+                    
+                    if (value != null) 
+                        LogicMethods.OpenInBrowser(value.ToString());
+                }
+                catch (Exception ex)
+                {
+                    ShowErrorMessage(ex.Message);
+                }
+            }
+        }
         #endregion
     }
 }

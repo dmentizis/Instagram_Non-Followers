@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using NonFollowers.Classes;
 using System.Diagnostics;
 
 namespace NonFollowers.Methods
@@ -55,6 +56,32 @@ namespace NonFollowers.Methods
             T? item = JsonConvert.DeserializeObject<T>(json);
 
             return item;
+        }
+
+        public static void CompareLists(List<Following.RelationshipsFollowing> Following, List<Follower> Followers, List<User> Users)
+        {
+            foreach (var followingUsr in Following)
+            {
+                bool foundInFollowers = false;
+                var followingUsername = followingUsr.title;
+
+                foreach (var followerUsr in Followers)
+                {
+
+                    string? followerUsername = followerUsr.String_list_data?.FirstOrDefault()?.Value;
+
+                    if (followingUsername == followerUsername)
+                    {
+                        foundInFollowers = true;
+                        continue;
+                    }
+                }
+
+                if (!foundInFollowers)
+                {
+                    Users.Add(new User { Username = followingUsr.title ?? string.Empty, Url = followingUsr?.string_list_data?.FirstOrDefault()?.href ?? string.Empty });
+                }
+            }
         }
     }
 
