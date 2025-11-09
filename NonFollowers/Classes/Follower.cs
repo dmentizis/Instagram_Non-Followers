@@ -2,15 +2,15 @@
 {
     public class Follower
     {
-        public string? title { get; set; }
-        public List<object>? media_list_data { get; set; }
-        public List<FollowerStringListDatum>? string_list_data { get; set; }
+        public string? Title { get; set; }
+        public List<object>? Media_list_data { get; set; }
+        public List<FollowerStringListDatum>? String_list_data { get; set; }
     }
 
     public class FollowerStringListDatum
     {
-        public string? href { get; set; }
-        public string? value { get; set; }
-        public int? timestamp { get; set; }
+        public string? Href { get; set; }
+        public string? Value { get; set; }
+        public int? Timestamp { get; set; }
     }
 }

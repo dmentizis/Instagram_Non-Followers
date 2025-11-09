@@ -9,7 +9,7 @@ namespace NonFollowers.Methods
         {
             try
             {
-                ProcessStartInfo psi = new ProcessStartInfo
+                ProcessStartInfo psi = new()
                 {
                     FileName = url,
                     UseShellExecute = true
@@ -38,13 +38,11 @@ namespace NonFollowers.Methods
                 throw new Exception("Invalid File Path");
 
 
-            using (StreamReader r = new StreamReader(filePath))
-            {
-                string json = r.ReadToEnd();
-                List<T>? items = JsonConvert.DeserializeObject<List<T>>(json);
+            using StreamReader r = new(filePath);
+            string json = r.ReadToEnd();
+            List<T>? items = JsonConvert.DeserializeObject<List<T>>(json);
 
-                return items;
-            }
+            return items;
         }
 
         public static T? LoadJsonToObject<T>(string filePath)
@@ -52,13 +50,11 @@ namespace NonFollowers.Methods
             if (!File.Exists(filePath))
                 throw new Exception("Invalid File Path");
 
-            using (StreamReader r = new StreamReader(filePath))
-            {
-                string json = r.ReadToEnd();
-                T? item = JsonConvert.DeserializeObject<T>(json);
+            using StreamReader r = new(filePath);
+            string json = r.ReadToEnd();
+            T? item = JsonConvert.DeserializeObject<T>(json);
 
-                return item;
-            }
+            return item;
         }
     }
 

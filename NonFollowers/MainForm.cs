@@ -10,9 +10,9 @@ namespace NonFollowers
         private string _followersFilePath = string.Empty;
         private string _followingFilePath = string.Empty;
 
-        private List<Follower>? _followers = new List<Follower>();
-        private Following? _following = null;
-        private List<User>? _users = new List<User>();
+        private List<Follower>? _followers = [];
+        private Following? _following = new();
+        private List<User>? _users = [];
         #endregion
 
         public MainForm()
@@ -35,7 +35,7 @@ namespace NonFollowers
             this.openFileDialog1.Title = "My Image Browser";
         }
        
-        private void btnFollowers_Click(object sender, EventArgs e)
+        private void BtnFollowers_Click(object sender, EventArgs e)
         {
             DialogResult dr = this.openFileDialog1.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
@@ -47,7 +47,7 @@ namespace NonFollowers
             EnableCompareButtton();
         }
 
-        private void btnFollowing_Click(object sender, EventArgs e)
+        private void BtnFollowing_Click(object sender, EventArgs e)
         {
             DialogResult dr = this.openFileDialog1.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
@@ -59,7 +59,7 @@ namespace NonFollowers
             EnableCompareButtton();
         }
 
-        private void btnCompare_Click(object sender, EventArgs e)
+        private void BtnCompare_Click(object sender, EventArgs e)
         {
             try
             {
@@ -70,13 +70,13 @@ namespace NonFollowers
                 if(_following == null)
                     throw new Exception("Following data could not be loaded.");
 
-                if(_following.relationships_following == null || !_following.relationships_following.Any())
+                if(_following.relationships_following == null || _following.relationships_following.Count == 0)
                     throw new Exception("Following relationships data could not be loaded.");
 
                 if (_followers == null)
                     throw new Exception("Followers data could not be loaded.");
 
-                if (!_followers.Any())
+                if (_followers.Count == 0)
                     throw new Exception("No followers found in the followers data.");
 
                 if(_users == null)
@@ -91,7 +91,7 @@ namespace NonFollowers
                     foreach (var followerUsr in _followers)
                     {
 
-                        string? followerUsername = followerUsr.string_list_data?.FirstOrDefault()?.value;
+                        string? followerUsername = followerUsr.String_list_data?.FirstOrDefault()?.Value;
 
                         if (followingUsername == followerUsername)
                         {
@@ -115,7 +115,7 @@ namespace NonFollowers
             }
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        private void DataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
             if (e.ColumnIndex == dataGridView1?.Columns["btnNaviagateTo"]?.Index && e.RowIndex >= 0)
             {
@@ -146,7 +146,7 @@ namespace NonFollowers
             _following = null;
             _users = null;
         }
-        private void ShowErrorMessage(string message)
+        private static void ShowErrorMessage(string message)
         {
             MessageBox.Show(
                 message,
@@ -166,7 +166,7 @@ namespace NonFollowers
         {
             _followers = LogicMethods.LoadJsonToObjectList<Follower>(_followersFilePath);
             _following = LogicMethods.LoadJsonToObject<Following>(_followingFilePath);
-            _users = new List<User>();
+            _users = [];
         }
         #endregion
 
