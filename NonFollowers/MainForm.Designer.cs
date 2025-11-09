@@ -1,6 +1,6 @@
 ﻿namespace NonFollowers
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -152,9 +152,9 @@
             MaximumSize = new Size(750, 476);
             MinimizeBox = false;
             MinimumSize = new Size(750, 476);
-            Name = "Form1";
-            Text = "Form1";
-            Load += Form1_Load;
+            Name = "MainForm";
+            Text = "MainForm";
+            Load += MainForm_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)userBindingSource).EndInit();
             ResumeLayout(false);
