@@ -79,7 +79,7 @@ namespace NonFollowers
             DialogResult dr = this.openFileDialog1.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                _followersFilePath += openFileDialog1.FileName;
+                _followersFilePath = openFileDialog1.FileName;
                 txtFollowersFilePath.Text = _followersFilePath;
             }
 
@@ -90,7 +90,7 @@ namespace NonFollowers
             DialogResult dr = this.openFileDialog1.ShowDialog();
             if (dr == System.Windows.Forms.DialogResult.OK)
             {
-                _followingFilePath += openFileDialog1.FileName;
+                _followingFilePath = openFileDialog1.FileName;
                 txtFollowingFilePath.Text = _followersFilePath;
             }
 
