@@ -1,6 +1,6 @@
 ﻿namespace NonFollowers
 {
-    partial class Form1
+    partial class MainForm
     {
         /// <summary>
         ///  Required designer variable.
@@ -52,7 +52,7 @@
             btnFollowers.TabIndex = 0;
             btnFollowers.Text = "Followers File";
             btnFollowers.UseVisualStyleBackColor = true;
-            btnFollowers.Click += btnFollowers_Click;
+            btnFollowers.Click += BtnFollowers_Click;
             // 
             // btnFollowing
             // 
@@ -62,7 +62,7 @@
             btnFollowing.TabIndex = 1;
             btnFollowing.Text = "Following File";
             btnFollowing.UseVisualStyleBackColor = true;
-            btnFollowing.Click += btnFollowing_Click;
+            btnFollowing.Click += BtnFollowing_Click;
             // 
             // txtFollowersFilePath
             // 
@@ -89,7 +89,7 @@
             btnCompare.TabIndex = 4;
             btnCompare.Text = "Compare";
             btnCompare.UseVisualStyleBackColor = true;
-            btnCompare.Click += btnCompare_Click;
+            btnCompare.Click += BtnCompare_Click;
             // 
             // dataGridView1
             // 
@@ -104,7 +104,7 @@
             dataGridView1.Name = "dataGridView1";
             dataGridView1.Size = new Size(710, 300);
             dataGridView1.TabIndex = 5;
-            dataGridView1.CellContentClick += dataGridView1_CellContentClick;
+            dataGridView1.CellContentClick += DataGridView1_CellContentClick;
             // 
             // usernameDataGridViewTextBoxColumn
             // 
@@ -152,9 +152,9 @@
             MaximumSize = new Size(750, 476);
             MinimizeBox = false;
             MinimumSize = new Size(750, 476);
-            Name = "Form1";
-            Text = "Form1";
-            Load += Form1_Load;
+            Name = "MainForm";
+            Text = "MainForm";
+            Load += MainForm_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)userBindingSource).EndInit();
             ResumeLayout(false);
