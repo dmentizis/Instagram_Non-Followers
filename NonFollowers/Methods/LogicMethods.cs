@@ -73,7 +73,7 @@ namespace NonFollowers.Methods
                     if (followingUsername == followerUsername)
                     {
                         foundInFollowers = true;
-                        continue;
+                        break;
                     }
                 }
 
