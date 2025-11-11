@@ -46,9 +46,10 @@
             // 
             // btnFollowers
             // 
-            btnFollowers.Location = new Point(12, 12);
+            btnFollowers.Location = new Point(22, 26);
+            btnFollowers.Margin = new Padding(6);
             btnFollowers.Name = "btnFollowers";
-            btnFollowers.Size = new Size(134, 23);
+            btnFollowers.Size = new Size(300, 49);
             btnFollowers.TabIndex = 0;
             btnFollowers.Text = "Followers File";
             btnFollowers.UseVisualStyleBackColor = true;
@@ -56,9 +57,10 @@
             // 
             // btnFollowing
             // 
-            btnFollowing.Location = new Point(12, 41);
+            btnFollowing.Location = new Point(22, 87);
+            btnFollowing.Margin = new Padding(6);
             btnFollowing.Name = "btnFollowing";
-            btnFollowing.Size = new Size(134, 23);
+            btnFollowing.Size = new Size(300, 49);
             btnFollowing.TabIndex = 1;
             btnFollowing.Text = "Following File";
             btnFollowing.UseVisualStyleBackColor = true;
@@ -66,26 +68,31 @@
             // 
             // txtFollowersFilePath
             // 
+            txtFollowersFilePath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtFollowersFilePath.Enabled = false;
-            txtFollowersFilePath.Location = new Point(180, 12);
+            txtFollowersFilePath.Location = new Point(334, 31);
+            txtFollowersFilePath.Margin = new Padding(6);
             txtFollowersFilePath.Name = "txtFollowersFilePath";
-            txtFollowersFilePath.Size = new Size(542, 23);
+            txtFollowersFilePath.Size = new Size(1075, 39);
             txtFollowersFilePath.TabIndex = 2;
             // 
             // txtFollowingFilePath
             // 
+            txtFollowingFilePath.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             txtFollowingFilePath.Enabled = false;
-            txtFollowingFilePath.Location = new Point(180, 42);
+            txtFollowingFilePath.Location = new Point(334, 92);
+            txtFollowingFilePath.Margin = new Padding(6);
             txtFollowingFilePath.Name = "txtFollowingFilePath";
-            txtFollowingFilePath.Size = new Size(542, 23);
+            txtFollowingFilePath.Size = new Size(1075, 39);
             txtFollowingFilePath.TabIndex = 3;
             // 
             // btnCompare
             // 
             btnCompare.Enabled = false;
-            btnCompare.Location = new Point(12, 70);
+            btnCompare.Location = new Point(22, 149);
+            btnCompare.Margin = new Padding(6);
             btnCompare.Name = "btnCompare";
-            btnCompare.Size = new Size(710, 55);
+            btnCompare.Size = new Size(300, 72);
             btnCompare.TabIndex = 4;
             btnCompare.Text = "Compare";
             btnCompare.UseVisualStyleBackColor = true;
@@ -96,38 +103,48 @@
             dataGridView1.AllowUserToAddRows = false;
             dataGridView1.AllowUserToDeleteRows = false;
             dataGridView1.AllowUserToOrderColumns = true;
+            dataGridView1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             dataGridView1.AutoGenerateColumns = false;
             dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             dataGridView1.Columns.AddRange(new DataGridViewColumn[] { usernameDataGridViewTextBoxColumn, urlDataGridViewTextBoxColumn, btnNaviagateTo });
             dataGridView1.DataSource = userBindingSource;
-            dataGridView1.Location = new Point(12, 131);
+            dataGridView1.Location = new Point(22, 233);
+            dataGridView1.Margin = new Padding(6);
             dataGridView1.Name = "dataGridView1";
-            dataGridView1.Size = new Size(710, 300);
+            dataGridView1.RowHeadersWidth = 82;
+            dataGridView1.Size = new Size(1387, 396);
             dataGridView1.TabIndex = 5;
             dataGridView1.CellContentClick += DataGridView1_CellContentClick;
             // 
             // usernameDataGridViewTextBoxColumn
             // 
+            usernameDataGridViewTextBoxColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             usernameDataGridViewTextBoxColumn.DataPropertyName = "Username";
             usernameDataGridViewTextBoxColumn.HeaderText = "Username";
+            usernameDataGridViewTextBoxColumn.MinimumWidth = 10;
             usernameDataGridViewTextBoxColumn.Name = "usernameDataGridViewTextBoxColumn";
             usernameDataGridViewTextBoxColumn.ReadOnly = true;
+            usernameDataGridViewTextBoxColumn.Width = 166;
             // 
             // urlDataGridViewTextBoxColumn
             // 
+            urlDataGridViewTextBoxColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             urlDataGridViewTextBoxColumn.DataPropertyName = "Url";
             urlDataGridViewTextBoxColumn.HeaderText = "Url";
+            urlDataGridViewTextBoxColumn.MinimumWidth = 10;
             urlDataGridViewTextBoxColumn.Name = "urlDataGridViewTextBoxColumn";
             urlDataGridViewTextBoxColumn.ReadOnly = true;
-            urlDataGridViewTextBoxColumn.Width = 380;
+            urlDataGridViewTextBoxColumn.Width = 89;
             // 
             // btnNaviagateTo
             // 
+            btnNaviagateTo.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
             btnNaviagateTo.HeaderText = "Navigate";
+            btnNaviagateTo.MinimumWidth = 10;
             btnNaviagateTo.Name = "btnNaviagateTo";
             btnNaviagateTo.Text = "Open In Browser";
             btnNaviagateTo.UseColumnTextForButtonValue = true;
-            btnNaviagateTo.Width = 170;
+            btnNaviagateTo.Width = 115;
             // 
             // userBindingSource
             // 
@@ -137,23 +154,23 @@
             // 
             openFileDialog1.FileName = "openFileDialog1";
             // 
-            // Form1
+            // MainForm
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(13F, 32F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(734, 437);
+            ClientSize = new Size(1424, 644);
             Controls.Add(dataGridView1);
             Controls.Add(btnCompare);
             Controls.Add(txtFollowingFilePath);
             Controls.Add(txtFollowersFilePath);
             Controls.Add(btnFollowing);
             Controls.Add(btnFollowers);
+            Margin = new Padding(6);
             MaximizeBox = false;
-            MaximumSize = new Size(750, 476);
             MinimizeBox = false;
-            MinimumSize = new Size(750, 476);
+            MinimumSize = new Size(900, 700);
             Name = "MainForm";
-            Text = "MainForm";
+            Text = "Instagarm Non-Followers";
             Load += MainForm_Load;
             ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
             ((System.ComponentModel.ISupportInitialize)userBindingSource).EndInit();
