@@ -1,27 +1,40 @@
-# Non-Followers
+# Instagram Connection Explorer
 
-A simple Windows Forms application that helps you identify which Instagram accounts you follow that **do not follow you back**.
-
-The app takes two JSON files exported from Instagram's **Data Download**:
-- The list of accounts that follow you  
-- The list of accounts you follow  
-
-It then compares the two lists and displays all users you follow who aren't following you back.
-
-This tool runs locally on your machine and does not require login or access to your Instagram account — only the exported data files.
+A local Windows Forms app for exploring Instagram JSON exports. No login is required.
 
 ## Features
-- Load Instagram “followers” and “following” JSON exports  
-- Automatically compare both lists  
-- View which accounts don’t follow you back  
-- Simple and lightweight Windows Forms interface  
 
-## How to Use
-1. Request your Instagram data export from the **Instagram Settings > Privacy and Security > Download Your Data** page.  
-2. Extract the downloaded ZIP and locate the `followers_1.json` and `following.json` files.  
-3. Open the application and select the two JSON files.  
-4. View the generated list of accounts that don’t follow you back.
+- Compare following against followers to find accounts that do not follow you back.
+- Select multiple follower export parts together (followers_1.json, followers_2.json, etc.).
+- View pending follow requests in a separate tab.
+- Open any result in your default browser.
+- Resizable layout, read-only grids, result counts, and background loading.
+- Case-insensitive matching, duplicate removal, and validation of malformed exports.
 
-## Requirements
-- Windows  
-- .NET Framework / .NET Runtime (version your app uses)
+## Use
+
+Extract your Instagram JSON export and locate the connections/followers_and_following folder.
+
+1. On **Not following back**, browse for all follower JSON parts and following.json, then click **Compare profiles**.
+2. On **Pending requests**, choose pending_follow_requests.json and click **Load requests**.
+3. Click **Open in browser** beside a profile to visit Instagram.
+
+Pending requests supports both the label_values export and the older relationships_follow_requests_sent format. Empty exports are valid. Results reflect the date of the export; they are not live account data.
+
+## Build and run
+
+Requires Windows and the .NET 10 SDK (or .NET 10 Desktop Runtime for a built app).
+
+```powershell
+dotnet build NonFollowers.sln
+dotnet run --project NonFollowers
+```
+
+## Regression checks
+
+The checks use generated fixtures and optionally your local exports; private export data is not included in the repository.
+
+```powershell
+dotnet run --project NonFollowers.Checks
+# Optional: pass the local followers_and_following directory as the first argument.
+```

@@ -1,88 +1,73 @@
-﻿using Newtonsoft.Json;
 using NonFollowers.Classes;
 using System.Diagnostics;
+using System.Text.Json;
 
-namespace NonFollowers.Methods
+namespace NonFollowers.Methods;
+
+public enum ExportKind { Followers, Following, Pending }
+
+public static class LogicMethods
 {
-    public static class LogicMethods
+    public static List<User> LoadUsers(string path, ExportKind kind)
     {
-        public static void OpenInBrowser(string? url)
+        using var document = JsonDocument.Parse(File.ReadAllText(path));
+        var root = document.RootElement;
+        string key = kind switch
         {
-            try
+            ExportKind.Followers => "relationships_followers",
+            ExportKind.Following => "relationships_following",
+            _ => "relationships_follow_requests_sent"
+        };
+        if (root.ValueKind == JsonValueKind.Object && root.TryGetProperty(key, out var wrapped))
+            root = wrapped;
+        else if (root.ValueKind != JsonValueKind.Array || kind == ExportKind.Following)
+            throw new InvalidDataException($"Select a valid {kind.ToString().ToLowerInvariant()} export ({Path.GetFileName(path)}).");
+        if (root.ValueKind != JsonValueKind.Array)
+            throw new InvalidDataException($"The {kind} list must be a JSON array.");
+
+        var users = new List<User>();
+        foreach (var item in root.EnumerateArray())
+        {
+            string? username = null;
+            if (kind == ExportKind.Pending && item.ValueKind == JsonValueKind.Object &&
+                item.TryGetProperty("label_values", out var labels) && labels.ValueKind == JsonValueKind.Array)
             {
-                ProcessStartInfo psi = new()
-                {
-                    FileName = url,
-                    UseShellExecute = true
-                };
-                Process.Start(psi);
+                foreach (var label in labels.EnumerateArray())
+                    if (ReadString(label, "label") == "Username") username = ReadString(label, "value");
             }
-            catch (Exception ex)
+            else if (item.ValueKind == JsonValueKind.Object && item.TryGetProperty("string_list_data", out var data) &&
+                     data.ValueKind == JsonValueKind.Array && data.GetArrayLength() > 0)
             {
-                throw new Exception("Could not open URL in browser.", ex);
+                username = ReadString(data[0], "value");
+                if (string.IsNullOrWhiteSpace(username)) username = ReadString(item, "title");
             }
+            username = username?.Trim();
+            if (string.IsNullOrEmpty(username) || username.Length > 30 ||
+                username.Any(c => !(char.IsAsciiLetterOrDigit(c) || c == '_' || c == '.')))
+                throw new InvalidDataException($"An entry in {Path.GetFileName(path)} has no valid Instagram username. Check that you selected the correct export.");
+            users.Add(new User { Username = username, Url = $"https://www.instagram.com/{username}/" });
         }
-
-        public static bool IsNullOrEmpty<T>(List<T>? list)
-        {
-            return list == null || list.Count == 0;
-        }
-
-        public static bool IsNullObject(object? obj)
-        {
-            return obj == null;
-        }
-
-        public static List<T>? LoadJsonToObjectList<T>(string filePath)
-        {
-            if (!File.Exists(filePath))
-                throw new Exception("Invalid File Path");
-
-
-            using StreamReader r = new(filePath);
-            string json = r.ReadToEnd();
-            List<T>? items = JsonConvert.DeserializeObject<List<T>>(json);
-
-            return items;
-        }
-
-        public static T? LoadJsonToObject<T>(string filePath)
-        {
-            if (!File.Exists(filePath))
-                throw new Exception("Invalid File Path");
-
-            using StreamReader r = new(filePath);
-            string json = r.ReadToEnd();
-            T? item = JsonConvert.DeserializeObject<T>(json);
-
-            return item;
-        }
-
-        public static void CompareLists(List<Following.RelationshipsFollowing> Following, List<Follower> Followers, List<User> Users)
-        {
-            foreach (var followingUsr in Following)
-            {
-                bool foundInFollowers = false;
-                var followingUsername = followingUsr.title;
-
-                foreach (var followerUsr in Followers)
-                {
-
-                    string? followerUsername = followerUsr.String_list_data?.FirstOrDefault()?.Value;
-
-                    if (followingUsername == followerUsername)
-                    {
-                        foundInFollowers = true;
-                        break;
-                    }
-                }
-
-                if (!foundInFollowers)
-                {
-                    Users.Add(new User { Username = followingUsr.title ?? string.Empty, Url = followingUsr?.string_list_data?.FirstOrDefault()?.href ?? string.Empty });
-                }
-            }
-        }
+        return users.DistinctBy(u => u.Username, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(u => u.Username, StringComparer.OrdinalIgnoreCase).ToList();
     }
 
+    private static string? ReadString(JsonElement element, string property) =>
+        element.ValueKind == JsonValueKind.Object && element.TryGetProperty(property, out var value) &&
+        value.ValueKind == JsonValueKind.String ? value.GetString() : null;
+
+    public static List<User> CompareUsers(IEnumerable<User> following, IEnumerable<User> followers)
+    {
+        var names = followers.Select(u => u.Username).ToHashSet(StringComparer.OrdinalIgnoreCase);
+        return following.Where(u => !names.Contains(u.Username))
+            .DistinctBy(u => u.Username, StringComparer.OrdinalIgnoreCase)
+            .OrderBy(u => u.Username, StringComparer.OrdinalIgnoreCase).ToList();
+    }
+
+    public static void OpenInBrowser(string? url)
+    {
+        if (!Uri.TryCreate(url, UriKind.Absolute, out var uri) || uri.Scheme != "https" ||
+            uri.Host != "www.instagram.com" || !string.IsNullOrEmpty(uri.UserInfo))
+            throw new InvalidDataException("This is not a valid Instagram profile link.");
+        Process.Start(new ProcessStartInfo(uri.AbsoluteUri) { UseShellExecute = true });
+    }
 }
