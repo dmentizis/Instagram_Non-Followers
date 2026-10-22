@@ -1,4 +1,5 @@
 using NonFollowers.Classes;
+using NonFollowers.Controls;
 using NonFollowers.Methods;
 
 namespace NonFollowers;
@@ -12,8 +13,8 @@ public partial class MainForm : Form
     private readonly TextBox followersFile = FileBox("Select followers_1.json (all parts if split)");
     private readonly TextBox followingFile = FileBox("Select following.json");
     private readonly TextBox pendingFile = FileBox("Select pending_follow_requests.json");
-    private readonly Button compare = new() { Text = "Compare profiles", Enabled = false };
-    private readonly Button loadPending = new() { Text = "Load requests", Enabled = false };
+    private readonly Button compare = new RoundedButton() { Text = "Compare profiles", Enabled = false };
+    private readonly Button loadPending = new RoundedButton() { Text = "Load requests", Enabled = false };
     private readonly DataGridView comparisonGrid = CreateGrid();
     private readonly DataGridView pendingGrid = CreateGrid();
     private readonly Label comparisonStatus = Status("Choose your exports to find who doesn't follow you back.");
@@ -24,15 +25,15 @@ public partial class MainForm : Form
 
     private void BuildInterface()
     {
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(24), RowCount = 3, ColumnCount = 1 };
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 84));
+        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(12), RowCount = 3, ColumnCount = 1 };
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 62));
         layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 32));
+        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
         var header = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false };
-        header.Controls.Add(new Label { Text = "Connection Explorer", AutoSize = true, Font = new Font("Segoe UI", 23, FontStyle.Bold) });
+        header.Controls.Add(new Label { Text = "Connection Explorer", AutoSize = true, Font = new Font("Segoe UI", 19, FontStyle.Bold) });
         header.Controls.Add(new Label { Text = "A clearer view of your Instagram connections.", AutoSize = true, ForeColor = Color.DimGray });
         layout.Controls.Add(header, 0, 0);
-        tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(20, 10) };
+        tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(16, 6) };
         tabs.TabPages.Add(BuildTab(false));
         tabs.TabPages.Add(BuildTab(true));
         layout.Controls.Add(tabs, 0, 1);
@@ -44,19 +45,19 @@ public partial class MainForm : Form
 
     private TabPage BuildTab(bool pending)
     {
-        var page = new TabPage(pending ? "Pending requests" : "Not following back") { BackColor = Color.White, Padding = new Padding(18) };
+        var page = new TabPage(pending ? "Pending requests" : "Not following back") { BackColor = Color.White, Padding = new Padding(10) };
         var panel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 5 };
         panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
+        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, pending ? 38 : 76));
         panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
-        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, pending ? 60 : 112));
-        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 52));
-        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 44));
+        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
         panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         panel.Controls.Add(new Label { Text = pending ? "Follow requests still awaiting a response" : "Discover accounts that don't follow you back", AutoSize = true, Font = new Font("Segoe UI", 13, FontStyle.Bold) }, 0, 0);
         var files = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = pending ? 1 : 2 };
-        files.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 100));
+        files.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 82));
         files.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        files.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 110));
+        files.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 94));
         if (pending) AddFileRow(files, 0, "Requests", pendingFile, () => SelectFile(ExportKind.Pending));
         else
         {
@@ -66,7 +67,7 @@ public partial class MainForm : Form
         panel.Controls.Add(files, 0, 1);
         var action = pending ? loadPending : compare;
         StyleButton(action, true);
-        action.Width = 190;
+        action.Width = 164;
         panel.Controls.Add(action, 0, 2);
         panel.Controls.Add(pending ? pendingStatus : comparisonStatus, 0, 3);
         panel.Controls.Add(pending ? pendingGrid : comparisonGrid, 0, 4);
@@ -78,8 +79,8 @@ public partial class MainForm : Form
     {
         panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
         panel.Controls.Add(new Label { Text = title, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft }, 0, row);
-        panel.Controls.Add(box, 1, row);
-        var browse = new Button { Text = "Browse…", Dock = DockStyle.Top };
+        panel.Controls.Add(new RoundedFileField(box), 1, row);
+        var browse = new RoundedButton { Text = "Browse…", Dock = DockStyle.Top };
         StyleButton(browse, false);
         browse.Click += (_, _) => select();
         panel.Controls.Add(browse, 2, row);
@@ -132,7 +133,7 @@ public partial class MainForm : Form
 
     private void StyleButton(Button button, bool primary)
     {
-        button.Height = 38;
+        button.Height = 30;
         button.FlatStyle = FlatStyle.Flat;
         button.FlatAppearance.BorderSize = primary ? 0 : 1;
         button.FlatAppearance.BorderColor = Color.FromArgb(218, 220, 232);
@@ -157,14 +158,14 @@ public partial class MainForm : Form
             RowHeadersVisible = false, BackgroundColor = Color.White, BorderStyle = BorderStyle.None,
             CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal, GridColor = Color.FromArgb(236, 237, 244),
             SelectionMode = DataGridViewSelectionMode.FullRowSelect, MultiSelect = false,
-            EnableHeadersVisualStyles = false, ColumnHeadersHeight = 42,
+            EnableHeadersVisualStyles = false, ColumnHeadersHeight = 32,
             ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
         };
-        grid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.FromArgb(237, 234, 248), ForeColor = Color.FromArgb(59, 44, 100), Font = new Font("Segoe UI", 10, FontStyle.Bold), Padding = new Padding(8) };
-        grid.DefaultCellStyle = new DataGridViewCellStyle { Padding = new Padding(8, 4, 8, 4), SelectionBackColor = Color.FromArgb(225, 218, 250), SelectionForeColor = Color.FromArgb(35, 28, 60) };
+        grid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.FromArgb(237, 234, 248), ForeColor = Color.FromArgb(59, 44, 100), Font = new Font("Segoe UI", 10, FontStyle.Bold), Padding = new Padding(7, 2, 7, 2) };
+        grid.DefaultCellStyle = new DataGridViewCellStyle { Padding = new Padding(7, 1, 7, 1), SelectionBackColor = Color.FromArgb(225, 218, 250), SelectionForeColor = Color.FromArgb(35, 28, 60) };
         grid.AlternatingRowsDefaultCellStyle.BackColor = Color.FromArgb(249, 249, 253);
-        grid.RowTemplate.Height = 42;
+        grid.RowTemplate.Height = 28;
         grid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(User.Username), HeaderText = "Username", FillWeight = 35, MinimumWidth = 130, SortMode = DataGridViewColumnSortMode.NotSortable });
         grid.Columns.Add(new DataGridViewTextBoxColumn { DataPropertyName = nameof(User.Url), HeaderText = "Profile link", FillWeight = 65, MinimumWidth = 180, SortMode = DataGridViewColumnSortMode.NotSortable });
         grid.Columns.Add(new DataGridViewButtonColumn { Name = "OpenProfile", HeaderText = "", Text = "Open in browser", UseColumnTextForButtonValue = true, AutoSizeMode = DataGridViewAutoSizeColumnMode.None, Width = 160 });
