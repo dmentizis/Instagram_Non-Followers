@@ -18,15 +18,18 @@ public static class LogicMethods
             ExportKind.Following => "relationships_following",
             _ => "relationships_follow_requests_sent"
         };
+        bool singlePending = kind == ExportKind.Pending && root.ValueKind == JsonValueKind.Object && !root.TryGetProperty(key, out _) &&
+            root.TryGetProperty("label_values", out var fields) && fields.ValueKind == JsonValueKind.Array;
         if (root.ValueKind == JsonValueKind.Object && root.TryGetProperty(key, out var wrapped))
             root = wrapped;
-        else if (root.ValueKind != JsonValueKind.Array || kind == ExportKind.Following)
+        else if (!singlePending && (root.ValueKind != JsonValueKind.Array || kind == ExportKind.Following))
             throw new InvalidDataException($"Select a valid {kind.ToString().ToLowerInvariant()} export ({Path.GetFileName(path)}).");
-        if (root.ValueKind != JsonValueKind.Array)
+        if (!singlePending && root.ValueKind != JsonValueKind.Array)
             throw new InvalidDataException($"The {kind} list must be a JSON array.");
 
         var users = new List<User>();
-        foreach (var item in root.EnumerateArray())
+        IEnumerable<JsonElement> entries = singlePending ? new[] { root } : root.EnumerateArray();
+        foreach (var item in entries)
         {
             string? username = null;
             if (kind == ExportKind.Pending && item.ValueKind == JsonValueKind.Object &&
