@@ -23,22 +23,52 @@ public partial class MainForm : Form
 
     public MainForm() { InitializeComponent(); }
 
+    protected override void OnLoad(EventArgs e)
+    {
+        FitToWorkingArea();
+        base.OnLoad(e);
+    }
+
+    protected override void OnDpiChanged(DpiChangedEventArgs e)
+    {
+        base.OnDpiChanged(e);
+        // Run after WinForms has applied the new monitor's suggested bounds.
+        BeginInvoke((Action)FitToWorkingArea);
+    }
+
+    private void FitToWorkingArea()
+    {
+        var area = Screen.FromControl(this).WorkingArea;
+        MinimumSize = new Size(Math.Min(LogicalToDeviceUnits(640), area.Width),
+            Math.Min(LogicalToDeviceUnits(480), area.Height));
+        if (WindowState != FormWindowState.Normal) return;
+        var size = new Size(Math.Min(Width, area.Width), Math.Min(Height, area.Height));
+        Bounds = new Rectangle(new Point(Math.Clamp(Left, area.Left, area.Right - size.Width),
+            Math.Clamp(Top, area.Top, area.Bottom - size.Height)), size);
+    }
+
     private void BuildInterface()
     {
-        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, Padding = new Padding(12), RowCount = 3, ColumnCount = 1 };
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 62));
+        var viewport = new Panel { Dock = DockStyle.Fill, AutoScroll = true };
+        var layout = new TableLayoutPanel { Dock = DockStyle.Fill, MinimumSize = new Size(600, 480), Padding = new Padding(12), RowCount = 3, ColumnCount = 1 };
+        layout.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         layout.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        layout.RowStyles.Add(new RowStyle(SizeType.Absolute, 24));
-        var header = new FlowLayoutPanel { Dock = DockStyle.Fill, FlowDirection = FlowDirection.TopDown, WrapContents = false };
-        header.Controls.Add(new Label { Text = "Connection Explorer", AutoSize = true, Font = new Font("Segoe UI", 19, FontStyle.Bold) });
-        header.Controls.Add(new Label { Text = "A clearer view of your Instagram connections.", AutoSize = true, ForeColor = Color.DimGray });
+        layout.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        var header = new TableLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, ColumnCount = 1, RowCount = 2 };
+        header.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
+        header.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        header.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        header.Controls.Add(new Label { Text = "Connection Explorer", Dock = DockStyle.Fill, AutoSize = true, Font = new Font("Segoe UI", 19, FontStyle.Bold) }, 0, 0);
+        header.Controls.Add(new Label { Text = "A clearer view of your Instagram connections.", Dock = DockStyle.Fill, AutoSize = true, ForeColor = Color.DimGray }, 0, 1);
         layout.Controls.Add(header, 0, 0);
         tabs = new TabControl { Dock = DockStyle.Fill, Padding = new Point(16, 6) };
         tabs.TabPages.Add(BuildTab(false));
         tabs.TabPages.Add(BuildTab(true));
         layout.Controls.Add(tabs, 0, 1);
-        layout.Controls.Add(new Label { Text = "Private by design · Files are processed on your computer. Results reflect the export date.", Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft, Font = new Font("Segoe UI", 9), ForeColor = Color.DimGray }, 0, 2);
-        Controls.Add(layout);
+        layout.Controls.Add(new Label { Text = "Private by design · Files are processed on your computer. Results reflect the export date.", AutoSize = true, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft, Font = new Font("Segoe UI", 9), ForeColor = Color.DimGray }, 0, 2);
+        viewport.Controls.Add(layout);
+        Controls.Add(viewport);
         compare.Click += async (_, _) => await LoadResults(false);
         loadPending.Click += async (_, _) => await LoadResults(true);
     }
@@ -48,16 +78,16 @@ public partial class MainForm : Form
         var page = new TabPage(pending ? "Pending requests" : "Not following back") { BackColor = Color.White, Padding = new Padding(10) };
         var panel = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 1, RowCount = 5 };
         panel.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 28));
-        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, pending ? 38 : 76));
-        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 38));
-        panel.RowStyles.Add(new RowStyle(SizeType.Absolute, 30));
+        panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
         panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        panel.Controls.Add(new Label { Text = pending ? "Follow requests still awaiting a response" : "Discover accounts that don't follow you back", AutoSize = true, Font = new Font("Segoe UI", 13, FontStyle.Bold) }, 0, 0);
-        var files = new TableLayoutPanel { Dock = DockStyle.Fill, ColumnCount = 3, RowCount = pending ? 1 : 2 };
-        files.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 82));
+        panel.Controls.Add(new Label { Text = pending ? "Follow requests still awaiting a response" : "Discover accounts that don't follow you back", Dock = DockStyle.Fill, AutoSize = true, Font = new Font("Segoe UI", 13, FontStyle.Bold) }, 0, 0);
+        var files = new TableLayoutPanel { Dock = DockStyle.Fill, AutoSize = true, AutoSizeMode = AutoSizeMode.GrowAndShrink, ColumnCount = 3, RowCount = pending ? 1 : 2 };
+        files.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         files.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100));
-        files.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 94));
+        files.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
         if (pending) AddFileRow(files, 0, "Requests", pendingFile, () => SelectFile(ExportKind.Pending));
         else
         {
@@ -67,7 +97,6 @@ public partial class MainForm : Form
         panel.Controls.Add(files, 0, 1);
         var action = pending ? loadPending : compare;
         StyleButton(action, true);
-        action.Width = 164;
         panel.Controls.Add(action, 0, 2);
         panel.Controls.Add(pending ? pendingStatus : comparisonStatus, 0, 3);
         panel.Controls.Add(pending ? pendingGrid : comparisonGrid, 0, 4);
@@ -77,8 +106,8 @@ public partial class MainForm : Form
 
     private void AddFileRow(TableLayoutPanel panel, int row, string title, TextBox box, Action select)
     {
-        panel.RowStyles.Add(new RowStyle(SizeType.Percent, 100));
-        panel.Controls.Add(new Label { Text = title, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft }, 0, row);
+        panel.RowStyles.Add(new RowStyle(SizeType.AutoSize));
+        panel.Controls.Add(new Label { Text = title, AutoSize = true, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft }, 0, row);
         panel.Controls.Add(new RoundedFileField(box), 1, row);
         var browse = new RoundedButton { Text = "Browse…", Dock = DockStyle.Top };
         StyleButton(browse, false);
@@ -133,7 +162,9 @@ public partial class MainForm : Form
 
     private void StyleButton(Button button, bool primary)
     {
-        button.Height = 30;
+        button.AutoSize = true;
+        button.AutoSizeMode = AutoSizeMode.GrowAndShrink;
+        button.Padding = new Padding(12, 5, 12, 5);
         button.FlatStyle = FlatStyle.Flat;
         button.FlatAppearance.BorderSize = primary ? 0 : 1;
         button.FlatAppearance.BorderColor = Color.FromArgb(218, 220, 232);
@@ -147,7 +178,7 @@ public partial class MainForm : Form
         ReadOnly = true, PlaceholderText = placeholder, Dock = DockStyle.Top,
         Margin = new Padding(3, 7, 12, 3), BackColor = Color.White, AccessibleName = placeholder
     };
-    private static Label Status(string text) => new() { Text = text, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Color.FromArgb(90, 82, 120) };
+    private static Label Status(string text) => new() { Text = text, AutoSize = true, Dock = DockStyle.Fill, TextAlign = ContentAlignment.MiddleLeft, ForeColor = Color.FromArgb(90, 82, 120) };
 
     private static DataGridView CreateGrid()
     {
@@ -158,8 +189,9 @@ public partial class MainForm : Form
             RowHeadersVisible = false, BackgroundColor = Color.White, BorderStyle = BorderStyle.None,
             CellBorderStyle = DataGridViewCellBorderStyle.SingleHorizontal, GridColor = Color.FromArgb(236, 237, 244),
             SelectionMode = DataGridViewSelectionMode.FullRowSelect, MultiSelect = false,
-            EnableHeadersVisualStyles = false, ColumnHeadersHeight = 32,
-            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.DisableResizing,
+            EnableHeadersVisualStyles = false,
+            ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize,
+            AutoSizeRowsMode = DataGridViewAutoSizeRowsMode.DisplayedCellsExceptHeaders,
             AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill
         };
         grid.ColumnHeadersDefaultCellStyle = new DataGridViewCellStyle { BackColor = Color.FromArgb(237, 234, 248), ForeColor = Color.FromArgb(59, 44, 100), Font = new Font("Segoe UI", 10, FontStyle.Bold), Padding = new Padding(7, 2, 7, 2) };

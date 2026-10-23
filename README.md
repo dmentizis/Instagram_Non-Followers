@@ -9,6 +9,7 @@ A local Windows Forms app for exploring Instagram JSON exports. No login is requ
 - View pending follow requests in a separate tab.
 - Open any result in your default browser.
 - Resizable layout, read-only grids, result counts, and background loading.
+- Per-monitor DPI scaling, content-sized controls, and scrolling on small displays.
 - Case-insensitive matching, duplicate removal, and validation of malformed exports.
 
 ## Use
@@ -38,3 +39,5 @@ The checks use generated fixtures and optionally your local exports; private exp
 dotnet run --project NonFollowers.Checks
 # Optional: pass the local followers_and_following directory as the first argument.
 ```
+
+For a live DPI check, move the running window between monitors with different Windows display scaling settings and verify that text, file fields, buttons, and grid headers remain readable.

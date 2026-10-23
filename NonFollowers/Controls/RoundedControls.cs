@@ -53,6 +53,8 @@ internal sealed class RoundedFileField : Panel
     public RoundedFileField(TextBox box)
     {
         DoubleBuffered = true;
+        AutoSize = true;
+        AutoSizeMode = AutoSizeMode.GrowAndShrink;
         BackColor = Color.White;
         Dock = DockStyle.Fill;
         Margin = new Padding(3, 3, 8, 3);
@@ -62,6 +64,13 @@ internal sealed class RoundedFileField : Panel
         box.Dock = DockStyle.Fill;
         Controls.Add(box);
     }
+    public override Size GetPreferredSize(Size proposedSize)
+    {
+        // A single-line TextBox has a font-dependent height even with Dock.Fill.
+        var box = (TextBox)Controls[0];
+        return new Size(Padding.Horizontal + 1, box.PreferredHeight + Padding.Vertical);
+    }
+
     protected override void OnPaint(PaintEventArgs e)
     {
         base.OnPaint(e);
